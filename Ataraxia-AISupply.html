@@ -1,0 +1,2051 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ataraxia — Calm clarity. Measurable growth.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      /* AI Supply Theme Colors */
+      --bg-dark: #010308;
+      --bg-surface: rgba(255, 255, 255, 0.02);
+      --bg-surface-hover: rgba(122, 164, 219, 0.336);
+      --bg-card: rgba(15, 18, 25, 0.6);
+
+      --text-main: #ffffff;
+      --text-muted: #9ca3af;
+      --text-faint: #6b7280;
+
+      --border-light: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(42, 130, 255, 0.4);
+
+      /* Accents */
+      --accent: #2a82ff;
+      --accent-glow: rgba(42, 130, 255, 0.25);
+
+      --serif: "Instrument Serif", serif;
+      --sans: "Inter", -apple-system, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+
+      --gutter: clamp(24px, 5vw, 64px);
+      --maxw: 1200px;
+
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-full: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg-dark);
+    }
+
+    body {
+      background-color: transparent;
+      color: var(--text-main);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #dot-field-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Ambient glowing orbs */
+    .orb-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: -3;
+      pointer-events: none;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.6;
+      mix-blend-mode: screen;
+    }
+
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: rgba(42, 130, 255, 0.4);
+      top: -100px;
+      left: -100px;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: rgba(120, 42, 255, 0.3);
+      bottom: 20%;
+      right: -50px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Typography utilities */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: var(--serif);
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .shell {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 var(--gutter);
+    }
+
+    /* Badges & Buttons */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 14px;
+      padding: 14px 28px;
+      border-radius: var(--radius-full);
+      color: #fff;
+      background: var(--accent);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(42, 130, 255, 0.4);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      border-color: var(--border-light);
+      box-shadow: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn.ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* ============================
+       HEADER / NAV
+    =============================== */
+    nav.top {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 1200px;
+      z-index: 1001;
+      background: rgba(1, 3, 8, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      transition: top 0.4s ease, padding 0.4s ease, background 0.4s ease;
+    }
+
+    nav.top.scrolled {
+      top: 12px;
+      background: rgba(1, 3, 8, 0.85);
+    }
+
+    .nav-in {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      gap: 16px;
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--serif);
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      color: #fff;
+    }
+
+    .brand-mark em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .brand .tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      padding-left: 10px;
+    }
+
+    /* Centre links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      padding: 6px 14px;
+      border-radius: 999px;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+    }
+
+    /* Right side */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Hamburger */
+    .menu-toggle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.25s;
+      z-index: 1100;
+    }
+
+    .menu-toggle:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 100%;
+      height: 1.5px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s;
+    }
+
+    body.menu-open .menu-toggle span:nth-child(1) {
+      transform: translateY(6.5px) rotate(45deg);
+    }
+
+    body.menu-open .menu-toggle span:nth-child(2) {
+      opacity: 0;
+    }
+
+    body.menu-open .menu-toggle span:nth-child(3) {
+      transform: translateY(-6.5px) rotate(-45deg);
+    }
+
+    /* Fullscreen staggered menu */
+    .staggered-menu {
+      position: fixed;
+      inset: 0;
+      background: rgba(1, 3, 8, 0.97);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 0 10vw;
+      gap: 8px;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .staggered-menu a {
+      font-family: var(--serif);
+      font-size: clamp(36px, 7vw, 88px);
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      transition: color 0.3s;
+    }
+
+    .staggered-menu a:hover {
+      color: var(--accent);
+    }
+
+    .staggered-menu a .num {
+      font-family: var(--mono);
+      font-size: 0.22em;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.08em;
+    }
+
+    .staggered-menu .menu-footer {
+      margin-top: 64px;
+      display: flex;
+      gap: 32px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: rgba(255, 255, 255, 0.2);
+      text-transform: uppercase;
+    }
+
+    .staggered-menu .menu-cta {
+      margin-top: 48px;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    /* Responsive nav */
+    @media (max-width: 960px) {
+      .nav-links {
+        display: none;
+      }
+
+      .brand .tag {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav.top {
+        top: 12px;
+        width: calc(100% - 32px);
+        border-radius: 999px;
+      }
+
+      .desktop-only { display: none; }
+
+      .approach-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    /* BACKGROUND VIDEO */
+    /* BACKGROUND VIDEO */
+    .bg-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .hero .shell,
+    footer .shell {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      position: relative;
+      padding: 200px 0 120px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(1, 3, 8, 0.3) 0%, var(--bg-dark) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    h1.display {
+      font-size: clamp(48px, 8vw, 90px);
+      font-weight: 400;
+      line-height: 0.95;
+      margin-bottom: 32px;
+      max-width: 1000px;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .hero-stats {
+      margin-top: 100px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      width: 100%;
+      padding-top: 40px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .hero-stats>div {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .hero-stats .stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    .hero-stats .stat-value {
+      font-size: 22px;
+      font-family: var(--serif);
+      color: var(--text-main);
+    }
+
+    /* SECTIONS */
+    @keyframes sectionGradient {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    section.block {
+      padding: 140px 0;
+      position: relative;
+      background: linear-gradient(-45deg, rgba(0, 0, 0, 0) 0%, rgba(42, 130, 255, 0.04) 50%, rgba(0, 0, 0, 0) 100%);
+      background-size: 300% 300%;
+      animation: sectionGradient 12s ease infinite;
+    }
+
+    /* White Section Adjustments */
+    section.block.white {
+      background: #ffffff;
+      color: #010308;
+      animation: none;
+    }
+
+    section.block.white h2,
+    section.block.white h3,
+    section.block.white h4,
+    section.block.white h5 {
+      color: #010308;
+    }
+
+    section.block.white p {
+      color: #4b5563;
+    }
+
+    section.block.white .badge {
+      background: rgba(0, 0, 0, 0.05);
+      border-color: rgba(0, 0, 0, 0.1);
+      color: #6b7280;
+    }
+
+    section.block.white .card,
+    section.block.white .why-cell,
+    section.block.white .pricing-card,
+    section.block.white .step-card {
+      background: #f3f4f6;
+      border-color: rgba(0, 0, 0, 0.08);
+      backdrop-filter: none;
+    }
+
+    section.block.white .card h3,
+    section.block.white .why-cell h5,
+    section.block.white .pricing-card h4,
+    section.block.white .step-card h4 {
+      color: #010308;
+    }
+
+    section.block.white .mono,
+    section.block.white .stat-label,
+    section.block.white .n,
+    section.block.white .t,
+    section.block.white .k,
+    section.block.white .tick {
+      color: #9ca3af;
+    }
+
+    section.block.white .svc-item,
+    section.block.white .who-list li,
+    section.block.white .who-list,
+    section.block.white .approach-grid,
+    section.block.white .services-list {
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    section.block.white .who-list li span:last-child {
+      color: #010308;
+    }
+
+    section.block.white .pricing-card .foot {
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .sec-head {
+      margin-bottom: 72px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .sec-head h2 {
+      font-size: clamp(40px, 6vw, 64px);
+      max-width: 800px;
+    }
+
+    /* CARDS (Bento Box style) */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(12px);
+    }
+
+    .card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card h3 {
+      font-size: 36px;
+      margin-bottom: 24px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .card p+p {
+      margin-top: 24px;
+    }
+
+    /* SERVICES (List style) */
+    .services-list {
+      border-top: 1px solid var(--border-light);
+    }
+
+    .svc-item {
+      display: grid;
+      grid-template-columns: 60px 1fr 1.5fr 40px;
+      gap: 32px;
+      align-items: start;
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border-light);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .svc-item:hover {
+      background: linear-gradient(90deg, transparent, #5e98e937, transparent);
+      padding-left: 24px;
+    }
+
+    .svc-item:hover p {
+      color: var(--text-main);
+    }
+
+    .svc-item .n {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      margin-top: 8px;
+    }
+
+    .svc-item h3 {
+      font-size: 32px;
+      letter-spacing: -0.01em;
+    }
+
+    .svc-item p {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 440px;
+    }
+
+    .svc-item .arrow {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 24px;
+      color: var(--text-faint);
+      transition: transform 0.3s ease, color 0.3s ease;
+      justify-self: end;
+    }
+
+    .svc-item:hover .arrow {
+      transform: translateX(8px);
+      color: var(--accent);
+    }
+
+    /* WHO WE WORK WITH */
+    .who-grid {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .who-img {
+      aspect-ratio: 4/5;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      position: relative;
+    }
+
+    .who-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.1);
+      transition: filter 0.6s ease;
+    }
+
+    .who-img:hover img {
+      filter: grayscale(0%) contrast(1.1);
+    }
+
+    .who-list {
+      list-style: none;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .who-list li {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 24px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-family: var(--serif);
+      font-size: 26px;
+      line-height: 1.3;
+      color: var(--text-main);
+    }
+
+    .who-list .t {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+      padding-top: 10px;
+    }
+
+    /* APPROACH */
+    .approach-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .step-card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-lg);
+      padding: 1px; /* The "border" thickness */
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+    }
+
+    .step-card:hover {
+      transform: translateY(-8px);
+    }
+
+    /* The moving glow effect */
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        transparent 160deg,
+        var(--accent) 180deg,
+        transparent 200deg,
+        transparent 360deg
+      );
+      transform: translate(-50%, -50%) rotate(0deg);
+      animation: rotate-glow 4s linear infinite;
+      z-index: 0;
+      opacity: 0.2;
+      transition: opacity 0.4s ease;
+    }
+
+    .step-card:hover::before {
+      opacity: 1;
+      animation-duration: 2s;
+    }
+
+    @keyframes rotate-glow {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .step-card-inner {
+      position: relative;
+      z-index: 1;
+      background: var(--bg-dark);
+      border-radius: calc(var(--radius-lg) - 1px);
+      padding: 48px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .step-card .num {
+      font-family: var(--serif);
+      font-size: 56px;
+      line-height: 1;
+      color: var(--accent);
+      opacity: 0.15;
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-style: italic;
+      transition: opacity 0.4s ease;
+    }
+
+    .step-card:hover .num {
+      opacity: 0.3;
+    }
+
+    .step-card h4 {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 400;
+      color: #fff;
+      margin: 0;
+    }
+
+    .step-card p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin: 0;
+      flex-grow: 1;
+    }
+
+    .step-card .tick {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* WHY GRID */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .why-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s;
+    }
+
+    .why-cell:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .why-cell .k {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+    }
+
+    .why-cell h5 {
+      font-size: 32px;
+    }
+
+    .why-cell p {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* ABOUT */
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .about-layout blockquote {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1.1;
+    }
+
+    .about-layout .etym {
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-light);
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 24px;
+    }
+
+    .about-layout .lat {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 24px;
+      color: var(--text-muted);
+    }
+
+    .about-layout .def {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .profile {
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .profile img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border-light);
+      filter: grayscale(100%);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-info h6 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .profile-info .role {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      margin-bottom: 12px;
+    }
+
+    .profile-info p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ENGAGEMENTS */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: all 0.3s;
+    }
+
+    .pricing-card:hover {
+      border-color: var(--accent);
+      background: rgba(42, 130, 255, 0.05);
+    }
+
+    .pricing-card .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pricing-card .type {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    .pricing-card .tenure {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+    }
+
+    .pricing-card h4 {
+      font-size: 32px;
+    }
+
+    .pricing-card p {
+      font-size: 15px;
+      color: var(--text-muted);
+      flex-grow: 1;
+    }
+
+    .pricing-card .foot {
+      padding-top: 24px;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pricing-card .lbl {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+
+    .pricing-card .arr {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 20px;
+      color: var(--text-muted);
+    }
+
+    /* CONTACT & FOOTER */
+    .contact {
+      padding: 160px 0;
+      border-top: 1px solid var(--border-light);
+      position: relative;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .contact::before {
+      content: '';
+      position: absolute;
+      bottom: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 400px;
+      background: rgba(42, 130, 255, 0.15);
+      filter: blur(100px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .contact h2 {
+      font-size: clamp(56px, 8vw, 120px);
+      margin-bottom: 24px;
+    }
+
+    .contact .email {
+      font-family: var(--serif);
+      font-size: 32px;
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      margin: 32px 0 48px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .contact .email:hover {
+      border-color: var(--accent);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-light);
+      padding: 64px 0 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(1, 3, 8, 0.75);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .foot-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 64px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .foot-grid h6 {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-main);
+      margin-bottom: 24px;
+    }
+
+    .foot-grid ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .foot-grid ul a {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .foot-grid ul a:hover {
+      color: #fff;
+    }
+
+    .foot-grid .big {
+      font-size: 40px;
+      margin-top: 24px;
+      color: var(--text-main);
+    }
+
+    .foot-grid .big small {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-faint);
+      margin-top: 16px;
+    }
+
+    .foot-end {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+    }
+
+    /* GSAP Classes */
+    .gsap-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    @media (max-width: 960px) {
+      .hero {
+        padding: 160px 0 80px;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+
+      .bento-grid,
+      .who-grid,
+      .about-layout,
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+
+      .approach-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .svc-item {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 32px 0;
+      }
+
+      .about-layout .etym {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .foot-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .why-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pricing-card h4 {
+        font-size: 28px;
+      }
+    }
+
+    /* STAGGERED MENU STYLES */
+    .menu-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      z-index: 100;
+      padding: 10px;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 28px;
+      height: 2px;
+      background: #fff;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.menu-open .menu-toggle span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+
+    body.menu-open .menu-toggle span:nth-child(2) {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+
+    body.menu-open .menu-toggle span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .staggered-menu {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(1, 3, 8, 0.98);
+      backdrop-filter: blur(20px);
+      z-index: 900;
+      /* High z-index */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .menu-toggle {
+      z-index: 1000;
+      /* Above menu */
+    }
+
+    .staggered-menu a {
+      font-family: var(--serif);
+      font-size: clamp(40px, 8vw, 80px);
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .staggered-menu a:hover {
+      color: var(--accent);
+    }
+
+    .staggered-menu a em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      opacity: 0.3;
+      font-size: 0.4em;
+      position: absolute;
+      left: -1.2em;
+      top: 0.5em;
+    }
+
+    .staggered-menu .menu-footer {
+      margin-top: 60px;
+      display: flex;
+      gap: 40px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-faint);
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Dot Field Background -->
+  <canvas id="dot-field-canvas"></canvas>
+
+  <!-- Ambient background -->
+  <div class="orb-container">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <nav class="top" id="main-nav">
+    <div class="nav-in">
+      <a class="brand" href="#">
+        <div class="brand-mark">Ataraxia<em>.</em></div>
+        <div class="tag">Where strategy meets action</div>
+      </a>
+
+      <div class="nav-links">
+        <a href="#what">What we do</a>
+        <a href="#services">Services</a>
+        <a href="#approach">Approach</a>
+        <a href="#about">About</a>
+        <a href="#contact">Engagements</a>
+      </div>
+
+      <div class="nav-right">
+        <a href="#contact" class="btn">
+          <span
+            style="width:5px;height:5px;background:#fff;border-radius:50%;display:inline-block;margin-right:7px;"></span>
+          Book Call
+        </a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- Fullscreen Staggered Menu -->
+  <div class="staggered-menu" id="staggered-menu">
+    <a href="#what"><span class="num">01 —</span>What we do</a>
+    <a href="#services"><span class="num">02 —</span>Services</a>
+    <a href="#approach"><span class="num">03 —</span>Approach</a>
+    <a href="#about"><span class="num">04 —</span>About</a>
+    <a href="#contact"><span class="num">05 —</span>Book a Call</a>
+    <div class="menu-footer">
+      <span>STRATEGY</span>
+      <span>·</span>
+      <span>ACTION</span>
+      <span>·</span>
+      <span>GROWTH</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <video class="bg-video" src="light-pillar-1778794559331.webm" autoplay loop muted playsinline></video>
+    <div class="shell">
+      <div class="badge gsap-hero">
+        <span class="dot"></span>
+        Est. Dubai / Abu Dhabi · Vol. 01
+      </div>
+
+      <h1 class="display gsap-hero">
+        Where <em>strategy</em><br />
+        meets action.
+      </h1>
+
+      <p class="hero-subtitle gsap-hero">
+        Ataraxia is a hands-on growth partner for founders and leadership teams who need sharper decisions, cleaner
+        execution, and real momentum — across marketing, operations, partnerships and go-to-market.
+      </p>
+
+      <div class="hero-cta gsap-hero">
+        <a class="btn" href="#contact">Book a discovery call</a>
+        <a class="btn ghost" href="#services">See services →</a>
+      </div>
+
+      <div class="hero-stats gsap-hero">
+        <div>
+          <span class="stat-label">01 / FOCUS</span>
+          <span class="stat-value">Growth &amp; <em>GTM</em></span>
+        </div>
+        <div>
+          <span class="stat-label">02 / STAGE</span>
+          <span class="stat-value">Seed → Series B</span>
+        </div>
+        <div>
+          <span class="stat-label">03 / REGION</span>
+          <span class="stat-value">UAE · Global</span>
+        </div>
+        <div>
+          <span class="stat-label">04 / FORMAT</span>
+          <span class="stat-value"><em>Hands-on</em></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- WHAT -->
+  <section class="block white" id="what">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>01 / What Ataraxia Does</div>
+        <h2>A partner for companies that need <em>sharper decisions</em> and cleaner execution.</h2>
+      </div>
+
+      <div class="bento-grid">
+        <div class="card gsap-reveal">
+          <h3>Strategy to traction</h3>
+          <p>We align teams on what matters most, design practical plans, and support delivery — so strategy becomes
+            traction, not a deck that gathers dust.</p>
+          <p>Every engagement ties back to measurable outcomes: pipeline, conversion, retention, and scale. We operate
+            alongside leadership, not from the sidelines.</p>
+        </div>
+        <div class="card gsap-reveal"
+          style="background: rgba(42, 130, 255, 0.05); border-color: rgba(42, 130, 255, 0.2);">
+          <span class="mono" style="display:block;margin-bottom:32px;">Engagement snapshot</span>
+          <div style="display:flex; flex-direction:column; gap:24px;">
+            <div style="display:flex; gap:24px; border-bottom: 1px solid var(--border-light); padding-bottom:24px;">
+              <span style="font-family:var(--serif); font-size:48px; line-height:1; color:#fff;"><em>92%</em></span>
+              <span style="font-size:14px; color:var(--text-muted); align-self:center;">of sprints ship a working GTM
+                artefact within 21 days.</span>
+            </div>
+            <div style="display:flex; gap:24px; border-bottom: 1px solid var(--border-light); padding-bottom:24px;">
+              <span
+                style="font-family:var(--serif); font-size:48px; line-height:1; color:#000000; width: 70px;">2-4</span>
+              <span style="font-size:14px; color:var(--text-muted); align-self:center;">week focused sprints to unblock
+                a specific growth challenge.</span>
+            </div>
+            <div style="display:flex; gap:24px;">
+              <span style="font-family:var(--serif); font-size:48px; line-height:1; color:#fff;"><em>1:1</em></span>
+              <span style="font-size:14px; color:var(--text-muted); align-self:center;">principal-led. No juniors handed
+                the account after the pitch.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="block" id="services">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>02 / How We Help</div>
+        <h2>Five practice areas.<br />One <em>operating rhythm.</em></h2>
+      </div>
+
+      <div class="services-list">
+        <div class="svc-item gsap-reveal">
+          <div class="n">/ 01</div>
+          <h3>Growth Strategy <em>&amp;</em> Positioning</h3>
+          <p>Clarify the story, sharpen differentiation, and align messaging to the right audience. Narrative, ICP, and
+            category choices that compound.</p>
+          <div class="arrow">→</div>
+        </div>
+        <div class="svc-item gsap-reveal">
+          <div class="n">/ 02</div>
+          <h3>Go-to-Market <em>&amp;</em> Acquisition</h3>
+          <p>A practical GTM plan, channel strategy, testing roadmap, and conversion improvements — sequenced against
+            real constraints.</p>
+          <div class="arrow">→</div>
+        </div>
+        <div class="svc-item gsap-reveal">
+          <div class="n">/ 03</div>
+          <h3>Partnerships <em>&amp;</em> BD</h3>
+          <p>Partnership pipelines, outreach systems, and deal narratives that unlock distribution beyond paid.</p>
+          <div class="arrow">→</div>
+        </div>
+        <div class="svc-item gsap-reveal">
+          <div class="n">/ 04</div>
+          <h3>Marketing Systems <em>&amp;</em> Execution</h3>
+          <p>Content strategy, lifecycle, paid support, funnel optimisation, and the analytics to prove it worked.</p>
+          <div class="arrow">→</div>
+        </div>
+        <div class="svc-item gsap-reveal">
+          <div class="n">/ 05</div>
+          <h3>Operations <em>for Scale</em></h3>
+          <p>Prioritisation, workflows, KPI dashboards, and execution rhythms that hold up as the team grows.</p>
+          <div class="arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO -->
+  <section class="block white" id="who">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>03 / Who We Work With</div>
+        <h2>Ambitious builders with <em>real momentum</em> and real constraints.</h2>
+      </div>
+
+      <div class="who-grid">
+        <div class="who-img gsap-reveal">
+          <img
+            src="https://images.unsplash.com/photo-1611849541496-13319adb4d00?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Ambitious Builders" />
+        </div>
+        <ul class="who-list">
+          <li class="gsap-reveal"><span class="t">A</span><span>Growth-stage <em>startups</em> and SMBs finding their
+              first repeatable system.</span></li>
+          <li class="gsap-reveal"><span class="t">B</span><span>Founder-led businesses scaling <em>past</em> the first
+              revenue ceiling.</span></li>
+          <li class="gsap-reveal"><span class="t">C</span><span>Teams entering new markets or refining
+              <em>product-market fit.</em></span></li>
+          <li class="gsap-reveal"><span class="t">D</span><span>Companies expanding into the <em>UAE &amp; GCC</em> who
+              need a locally-aware growth plan.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROACH -->
+  <section class="block" id="approach">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>04 / Our Approach</div>
+        <h2>Five movements. <em>Week one</em> to compounding results.</h2>
+      </div>
+
+      <div class="approach-grid">
+        <div class="step-card gsap-reveal">
+          <div class="step-card-inner">
+            <span class="num">01</span>
+            <h4>Diagnose</h4>
+            <p>Map the business context, constraints, and highest-leverage growth opportunities.</p>
+            <span class="tick">Week 01</span>
+          </div>
+        </div>
+        <div class="step-card gsap-reveal">
+          <div class="step-card-inner">
+            <span class="num">02</span>
+            <h4>Prioritise</h4>
+            <p>Define what to do now, what to stop, and what to sequence later — based on impact.</p>
+            <span class="tick">Week 01-02</span>
+          </div>
+        </div>
+        <div class="step-card gsap-reveal">
+          <div class="step-card-inner">
+            <span class="num">03</span>
+            <h4>Build the plan</h4>
+            <p>A clear roadmap with owners, metrics, timelines, and decision points.</p>
+            <span class="tick">Week 02</span>
+          </div>
+        </div>
+        <div class="step-card gsap-reveal">
+          <div class="step-card-inner">
+            <span class="num">04</span>
+            <h4>Execute together</h4>
+            <p>Hands-on support, feedback loops, and iteration inside the team.</p>
+            <span class="tick">Week 03+</span>
+          </div>
+        </div>
+        <div class="step-card gsap-reveal">
+          <div class="step-card-inner">
+            <span class="num">05</span>
+            <h4>Measure &amp; improve</h4>
+            <p>Tracking, learning, and optimisation to compound the gains.</p>
+            <span class="tick">Ongoing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="block white" id="why">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>05 / Why Ataraxia</div>
+        <h2>Strategy that <em>ships.</em> Teams that keep moving.</h2>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-cell gsap-reveal">
+          <span class="k">/ 01 Principle</span>
+          <h5>Clarity <em>under</em> pressure.</h5>
+          <p>We bring structure and calm decision-making into complex, high-stakes situations.</p>
+        </div>
+        <div class="why-cell gsap-reveal">
+          <span class="k">/ 02 Principle</span>
+          <h5>Strategy that <em>ships.</em></h5>
+          <p>Recommendations designed to be executed — not admired.</p>
+        </div>
+        <div class="why-cell gsap-reveal">
+          <span class="k">/ 03 Principle</span>
+          <h5>Partner <em>mindset.</em></h5>
+          <p>We operate alongside leadership teams, not from the sidelines.</p>
+        </div>
+        <div class="why-cell gsap-reveal">
+          <span class="k">/ 04 Principle</span>
+          <h5>Built for <em>growth.</em></h5>
+          <p>Every engagement ties back to pipeline, conversion, retention, and scale.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="block" id="about">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>06 / About the Name</div>
+        <h2>The name reflects a <em>belief.</em></h2>
+      </div>
+
+      <div class="about-layout">
+        <div class="gsap-reveal">
+          <div class="mono" style="margin-bottom:12px;">Origin</div>
+          <div class="etym" style="margin-top:0; padding-top:0; border:none;">
+            <div class="lat">ataraxía</div>
+            <div class="def">n. Gk. ἀταραξία — a lucid state of equanimity; freedom from mental disturbance; the
+              composure required to see a situation as it truly is.</div>
+          </div>
+
+          <div class="profile">
+            <img src="oscar.jpg" alt="Oscar Rodriguez" />
+            <div class="profile-info">
+              <h6>Oscar <em style="color:var(--accent)">Rodriguez</em></h6>
+              <div class="role">FOUNDER / GROWTH ADVISOR</div>
+              <p>15+ years building growth systems for founder-led teams across the UAE, GCC, and Europe. Former
+                operator; now partner-in-the-trenches.</p>
+            </div>
+          </div>
+        </div>
+        <div class="gsap-reveal">
+          <blockquote>
+            <em>“Calm clarity</em> creates better outcomes.” Ataraxia was built to help teams move from scattered effort
+            to focused execution — turning complexity into traction, and strategy into <em>growth.</em>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENGAGEMENTS -->
+  <section class="block white">
+    <div class="shell">
+      <div class="sec-head gsap-reveal">
+        <div class="badge"><span class="dot"></span>Appendix / Options</div>
+        <h2>Three ways to <em>work together.</em></h2>
+      </div>
+
+      <div class="pricing-grid">
+        <div class="pricing-card gsap-reveal">
+          <div class="top"><span class="type">Option · i</span><span class="tenure">Ongoing</span></div>
+          <h4><em>Advisory</em><br />Strategy &amp; guidance.</h4>
+          <p>Weekly or biweekly sessions, decision support, and strategic direction for founders and leadership.</p>
+          <div class="foot"><span class="lbl">From / 4 weeks</span><span class="arr">→</span></div>
+        </div>
+        <div class="pricing-card gsap-reveal">
+          <div class="top"><span class="type">Option · ii</span><span class="tenure">Embedded</span></div>
+          <h4><em>Implementation</em><br />Hands-on execution.</h4>
+          <p>We help build and ship the key deliverables alongside your team — not a handoff.</p>
+          <div class="foot"><span class="lbl">From / 8 weeks</span><span class="arr">→</span></div>
+        </div>
+        <div class="pricing-card gsap-reveal">
+          <div class="top"><span class="type">Option · iii</span><span class="tenure">Focused</span></div>
+          <h4><em>Sprints</em><br />2–4 week engagements.</h4>
+          <p>One specific growth challenge. One sharp team. A dated, shippable outcome.</p>
+          <div class="foot"><span class="lbl">From / 2 weeks</span><span class="arr">→</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="shell">
+      <div class="badge gsap-reveal"><span class="dot"></span>Accepting Q2 engagements</div>
+      <h2 class="gsap-reveal">Let's build<br /><em>momentum.</em></h2>
+      <div class="gsap-reveal">
+        <a class="email" href="mailto:hello@ataraxiaconsulting.org">
+          hello@ataraxiaconsulting.org <span
+            style="font-family:var(--sans); font-size:20px; font-style:normal; color:var(--text-faint)">↗</span>
+        </a>
+      </div>
+      <p class="gsap-reveal" style="color:var(--text-muted); max-width:460px; margin:0 auto 40px; font-size:16px;">
+        If you're building something ambitious and want a partner to help drive clarity and execution — let's talk. We
+        reply within two working days.
+      </p>
+      <div class="hero-cta gsap-reveal">
+        <a class="btn" href="#">Book a discovery call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <video class="bg-video" src="light-pillar-1778794559331.webm" autoplay loop muted playsinline></video>
+    <div class="shell">
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="#" style="margin-bottom:16px; display:inline-flex;">
+            <div class="brand-mark">Ataraxia<em>.</em></div>
+          </a>
+          <div class="big">Calm clarity.<br /><em>Measurable</em> growth.
+            <small>© 2026 — Dubai / Abu Dhabi</small>
+          </div>
+        </div>
+        <div>
+          <h6>PRACTICE</h6>
+          <ul>
+            <li><a href="#services">Growth &amp; positioning</a></li>
+            <li><a href="#services">Go-to-market</a></li>
+            <li><a href="#services">Partnerships</a></li>
+            <li><a href="#services">Marketing systems</a></li>
+            <li><a href="#services">Operations</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>FIRM</h6>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#approach">Approach</a></li>
+            <li><a href="#who">Clients</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h6>ELSEWHERE</h6>
+          <ul>
+            <li><a href="#">LinkedIn ↗</a></li>
+            <li><a href="#">Instagram ↗</a></li>
+            <li><a href="#">X / Twitter ↗</a></li>
+            <li><a href="#">Substack ↗</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-end">
+        <span>Ataraxia Consulting · Dubai · Abu Dhabi · Global</span>
+        <span>v.01 — 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // GSAP Animations
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero initial load animation
+    gsap.fromTo('.gsap-hero',
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: 'power3.out', delay: 0.2 }
+    );
+
+    // Scroll reveal elements
+    const revealElements = document.querySelectorAll('.gsap-reveal');
+    revealElements.forEach((el) => {
+      gsap.to(el, {
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        },
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'power3.out'
+      });
+    });
+
+    // Ambient floating orbs animation
+    gsap.to('.orb-1', {
+      x: 'random(-50, 50)',
+      y: 'random(-50, 50)',
+      duration: 8,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
+
+    gsap.to('.orb-2', {
+      x: 'random(-60, 60)',
+      y: 'random(-60, 60)',
+      duration: 10,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      delay: 2
+    });
+
+    // Dot Field Implementation
+    (function () {
+      const canvas = document.getElementById('dot-field-canvas');
+      const ctx = canvas.getContext('2d');
+      let dots = [];
+      const mouse = { x: -9999, y: -9999 };
+
+      // Configuration from USER
+      const dotRadius = 1;
+      const dotSpacing = 14;
+      const bulgeStrength = 28;
+      const cursorRadius = 200;
+      const cursorForce = 0.1;
+      const waveAmplitude = 1;
+      const glowRadius = 130;
+      const glowColor = "#04122e";
+      const gradientFrom = "#A855F7";
+      const gradientTo = "#B497CF";
+
+      const springConstant = 0.05;
+      const friction = 0.9;
+      let time = 0;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initDots();
+      }
+
+      function initDots() {
+        dots = [];
+        for (let x = 0; x < canvas.width + dotSpacing; x += dotSpacing) {
+          for (let y = 0; y < canvas.height + dotSpacing; y += dotSpacing) {
+            dots.push({
+              ax: x,
+              ay: y,
+              x: x,
+              y: y,
+              vx: 0,
+              vy: 0,
+              sparklePhase: Math.random() * Math.PI * 2,
+              sparkleSpeed: 0.02 + Math.random() * 0.05
+            });
+          }
+        }
+      }
+
+      function animate() {
+        time += 0.05;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Optional: Cursor Glow
+        if (mouse.x !== -9999) {
+          const glow = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, glowRadius);
+          glow.addColorStop(0, glowColor);
+          glow.addColorStop(1, 'rgba(6, 27, 43, 0.5)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        dots.forEach(dot => {
+          const dx = dot.x - mouse.x;
+          const dy = dot.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          // Interactive Bulge
+          if (dist < cursorRadius) {
+            const force = (cursorRadius - dist) / cursorRadius;
+            const angle = Math.atan2(dy, dx);
+            // bulgeOnly logic + cursorForce
+            dot.vx += Math.cos(angle) * force * bulgeStrength * cursorForce;
+            dot.vy += Math.sin(angle) * force * bulgeStrength * cursorForce;
+          }
+
+          // Subtle Wave motion on anchor points
+          const currentAx = dot.ax;
+          const currentAy = dot.ay + Math.sin(time + dot.ax * 0.01) * waveAmplitude;
+
+          // Spring back to (animated) anchor
+          dot.vx += (currentAx - dot.x) * springConstant;
+          dot.vy += (currentAy - dot.y) * springConstant;
+
+          // Apply physics
+          dot.vx *= friction;
+          dot.vy *= friction;
+          dot.x += dot.vx;
+          dot.y += dot.vy;
+
+          // Sparkle & Gradient Color
+          const sparkle = 0.4 + 0.6 * Math.sin(time * 0.5 + dot.sparklePhase);
+
+          // Interpolate color based on Y position for gradient effect
+          const gradientRatio = dot.y / canvas.height;
+          // Simplified color mix (using the purple tones)
+          ctx.fillStyle = gradientRatio > 0.5 ? gradientTo : gradientFrom;
+          ctx.globalAlpha = sparkle * 0.25; // Darker/Subtle as requested
+
+          // Draw dot
+          ctx.beginPath();
+          ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.globalAlpha = 1.0;
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+
+      window.addEventListener('resize', resize);
+      resize();
+      initRays();
+      draw();
+    })();
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav.top');
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    // Menu system: fullscreen on desktop, dropdown on mobile
+    const menuToggle = document.getElementById('menu-toggle');
+    const staggeredMenu = document.getElementById('staggered-menu');
+    const mobileDropdown = document.getElementById('mobile-dropdown');
+    const menuLinks = staggeredMenu.querySelectorAll('a');
+    const mobileLinks = mobileDropdown.querySelectorAll('a');
+
+    let isMenuOpen = false;
+
+    // GSAP timeline for fullscreen menu
+    const menuTl = gsap.timeline({ paused: true });
+    gsap.set(staggeredMenu, { visibility: 'hidden', opacity: 0 });
+
+    menuTl.to(staggeredMenu, {
+      visibility: 'visible', opacity: 1, pointerEvents: 'auto',
+      duration: 0.45, ease: 'power2.inOut'
+    });
+    menuTl.from(menuLinks, {
+      y: 80, opacity: 0, stagger: 0.09, duration: 0.75, ease: 'power4.out'
+    }, '-=0.25');
+    menuTl.from('.menu-footer span', {
+      opacity: 0, y: 20, stagger: 0.08, duration: 0.4
+    }, '-=0.3');
+
+    function isMobile() {
+      return window.innerWidth <= 600;
+    }
+
+    function openMenu() {
+      isMenuOpen = true;
+      document.body.classList.add('menu-open');
+      if (isMobile()) {
+        document.body.classList.add('mobile-open');
+      } else {
+        menuTl.play();
+      }
+    }
+
+    function closeMenu() {
+      isMenuOpen = false;
+      document.body.classList.remove('menu-open', 'mobile-open');
+      menuTl.reverse();
+    }
+
+    menuToggle.addEventListener('click', () => {
+      isMenuOpen ? closeMenu() : openMenu();
+    });
+
+    // Close desktop staggered menu on link click
+    menuLinks.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close mobile dropdown on link click
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Close on resize if switching between mobile/desktop
+    window.addEventListener('resize', () => {
+      if (isMenuOpen) closeMenu();
+    });
+  </script>
+</body>
+
+</html>
